@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ICHCI | Club of Horizon College International</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #050214; --accent-purple: #6d28d9; --glass: rgba(255, 255, 255, 0.03); --border-glass: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: #e2e8f0; overflow-x: hidden; scroll-behavior: smooth; }
+        nav { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease; }
+        .nav-hidden { transform: translateY(-100%); opacity: 0; }
+        #mobile-menu { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(-20px); opacity: 0; pointer-events: none; }
+        #mobile-menu.active { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .portal-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; filter: url(#goo); pointer-events: none; }
+        .blob-vfx { position: absolute; background: linear-gradient(45deg, #4f46e5, #7c3aed); border-radius: 50%; filter: blur(40px); opacity: 0.5; pointer-events: none; }
+        #interactive-lens { position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, transparent 70%); border-radius: 50%; transform: translate(-50%, -50%); transition: transform 0.1s ease-out; z-index: 1; mix-blend-mode: screen; pointer-events: none; }
+        @media (min-width: 768px) { #interactive-lens { width: 450px; height: 450px; } }
+        .liquid-blob { position: fixed; z-index: -2; filter: blur(80px); border-radius: 50%; opacity: 0.3; transition: all 5s ease-in-out; animation: float 20s infinite alternate; pointer-events: none; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, 20px) scale(1.1); } 100% { transform: translate(-20px, 40px) scale(0.9); } }
+        .glass-card { background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 32px; transition: all 0.4s cubic-bezier(0.2, 0, 0.2, 1); cursor: pointer; }
+        .glass-card:hover { transform: translateY(-8px); border-color: rgba(139, 92, 246, 0.4); background: rgba(255, 255, 255, 0.05); }
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        ::-webkit-scrollbar { width: 0px; }
+        .apple-gradient-text { background: linear-gradient(180deg, #fff 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #project-modal, #history-page { transition: opacity 0.6s ease, visibility 0.6s; }
+        #modal-content { transform: translateY(50px); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-open #modal-content { transform: translateY(0); }
+        #main-site { transition: opacity 0.6s ease, transform 0.6s ease; }
+        .history-active #main-site { opacity: 0; transform: scale(0.98); pointer-events: none; }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="hidden">
+        <defs><filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" /><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="goo" /><feBlend in="SourceGraphic" in2="goo" /></filter></defs>
+    </svg>
+
+    <div class="portal-container"><div id="interactive-lens"></div><div class="blob-vfx w-48 h-48 md:w-96 md:h-96 top-[-10%] left-[-5%]"></div><div class="blob-vfx w-64 h-64 md:w-[500px] md:h-[500px] bottom-[10%] right-[-10%] animate-pulse"></div></div>
+    <div class="liquid-blob w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-purple-900 top-[-100px] left-[-100px]"></div>
+
+    <div id="project-modal" class="fixed inset-0 z-[100] invisible opacity-0 flex items-center justify-center px-4 md:px-6">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-xl" onclick="closeModal()"></div>
+        <div id="modal-content" class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto glass-card p-6 md:p-12 border-white/20">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-white/40"><i data-lucide="x"></i></button>
+            <div id="modal-body" class="space-y-6 md:space-y-8"></div>
+        </div>
+    </div>
+
+    <div id="history-page" class="fixed inset-0 z-[90] invisible opacity-0 bg-black overflow-y-auto p-6 md:p-12 flex flex-col items-center">
+        <div class="w-full max-w-6xl flex justify-between items-center mb-10 md:mb-16">
+            <h1 class="text-3xl md:text-4xl font-bold apple-gradient-text">Project Archive</h1>
+            <button onclick="toggleHistory(false)" class="glass-card px-6 py-2 rounded-full text-xs font-bold hover:bg-white hover:text-black transition">← Back Home</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full max-w-6xl">
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('flood')">
+                <img src="Flood.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Beyond The Flood</h4><p class="text-white/40 text-sm">Flood Donation Drive</p>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('hope')">
+                <img src="hope.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Day of Hope</h4><p class="text-white/40 text-sm">Heartfelt support for families.</p>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('Insto')">
+                <img src="insto.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">12th Installation</h4>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('smile')">
+                <img src="smile.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Brighter Smiles 3.0</h4>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('fright')">
+                <img src="fright.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Fright Night 2.0</h4>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('mojito')">
+                <img src="mojito.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Mojito Mania</h4>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('bragging')">
+                <img src="bragging.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Bragging Rights</h4>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('words')">
+                <img src="words.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Words Without Borders</h4>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('paws')">
+                <img src="paws.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Paws of Hope</h4>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('return')">
+                <img src="return.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Return to Blue</h4>
+            </div>
+            <div class="glass-card p-6 flex flex-col gap-4" onclick="openModal('membership')">
+                <img src="membership.jpeg" class="w-full h-40 object-cover rounded-2xl"><h4 class="text-xl font-bold">Membership Drive</h4>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-site">
+        <nav id="navbar" class="fixed top-0 w-full z-50 px-4 md:px-6 py-4">
+            <div class="max-w-5xl mx-auto glass-card px-6 md:px-8 py-3 flex justify-between items-center rounded-full">
+                <span class="text-xl font-semibold tracking-tight">Horizon <span class="text-purple-400">Interact</span></span>
+                <div class="hidden md:flex space-x-8 text-sm font-medium opacity-80">
+                    <a href="#current" class="hover:text-purple-400 transition">Current</a>
+                    <button onclick="toggleHistory(true)" class="hover:text-purple-400 transition">History</button>
+                    <a href="#reserve" class="hover:text-purple-400 transition">Participate</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="openModal('contact')" class="bg-white text-black px-4 md:px-5 py-2 rounded-full text-xs font-bold hover:bg-purple-200 transition">Contact Us</button>
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-white"><i data-lucide="menu"></i></button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden mt-2 glass-card mx-auto max-w-[200px] p-4 flex flex-col space-y-4 text-center text-sm font-medium">
+                <a href="#current" onclick="toggleMobileMenu()">Current</a>
+                <button onclick="toggleHistory(true); toggleMobileMenu()">History</button>
+                <a href="#reserve" onclick="toggleMobileMenu()">Participate</a>
+            </div>
+        </nav>
+
+        <section class="min-h-screen flex flex-col justify-center items-center text-center px-6">
+            <div class="reveal">
+                <h1 class="text-5xl md:text-8xl font-bold apple-gradient-text tracking-tighter leading-tight mb-6">Driven By Passion, <br> Rewound With Purpose.</h1>
+                <p class="text-lg md:text-xl opacity-60 max-w-2xl mx-auto font-light leading-relaxed">Designing a better tomorrow, one project at a time.</p>
+            </div>
+        </section>
+
+        <section id="current" class="py-24 px-6 max-w-6xl mx-auto">
+            <div class="reveal mb-16"><h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Current Projects</h2><div class="h-1 w-20 bg-purple-500 rounded-full"></div></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-card p-10 reveal" onclick="openModal('Timeline')"><i data-lucide="circle-dollar-sign" class="text-purple-400 mb-6 w-10 h-10"></i><h3 class="text-2xl font-semibold mb-4 text-white">TimeLine</h3><p class="opacity-60 font-light text-sm">Interact themed calendar sale.</p></div>
+                <div class="glass-card p-10 reveal" onclick="openModal('band4band')"><i data-lucide="circle-dollar-sign" class="text-purple-400 mb-6 w-10 h-10"></i><h3 class="text-2xl font-semibold mb-4 text-white">Band4Band</h3><p class="opacity-60 font-light text-sm">Interact themed wristband initiative.</p></div>
+                <div class="glass-card p-10 reveal" onclick="openModal('Sunshine')"><i data-lucide="handshake" class="text-purple-400 mb-6 w-10 h-10"></i><h3 class="text-2xl font-semibold mb-4 text-white">Sunshine Seniors</h3><p class="opacity-60 font-light text-sm">Empowering the elderly.</p></div>
+                <div class="glass-card p-10 reveal" onclick="openModal('Membership2')"><i data-lucide="gavel" class="text-purple-400 mb-6 w-10 h-10"></i><h3 class="text-2xl font-semibold mb-4 text-white">2nd Membership Drive</h3><p class="opacity-60 font-light text-sm">Club intake phase two.</p></div>
+                <div class="glass-card p-10 reveal" onclick="openModal('Roots')"><i data-lucide="tree-palm" class="text-purple-400 mb-6 w-10 h-10"></i><h3 class="text-2xl fo
